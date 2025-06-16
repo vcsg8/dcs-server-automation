@@ -1,4 +1,4 @@
-module github.com/dcsdog
+module github.com/dcs-server-automation/dcsdog
 
 go 1.24
 
