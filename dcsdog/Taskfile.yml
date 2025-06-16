@@ -1,0 +1,45 @@
+# https://taskfile.dev
+
+version: '3'
+
+vars:
+  BINARY_NAME: dcsdog.exe
+
+tasks:
+  setup:
+    desc: Set up development environment
+    cmds:
+      - go mod download
+      - go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
+
+  lint:
+    desc: Run golangci-lint
+    cmds:
+      - golangci-lint run --verbose --print-issued-lines=false --print-linter-name=true
+
+  vet:
+    desc: Run go vet
+    cmds:
+      - go vet ./...
+
+  build:
+    desc: Build the executable
+    cmds:
+      - go build -o {{.BINARY_NAME}}
+
+  clean:
+    desc: Remove build artifacts
+    cmds:
+      - rm -f {{.BINARY_NAME}}
+
+  test:
+    desc: Run tests
+    cmds:
+      - go test -v ./...
+
+  ci:
+    desc: Run all checks
+    deps: [lint, vet, test]
+
+  default:
+    deps: [ci]
