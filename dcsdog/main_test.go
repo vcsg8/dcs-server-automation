@@ -97,9 +97,9 @@ do
 	_G['package'] = nil
 end`,
 			expected: `-- local function sanitizeModule(name) -- Modified by dcsdog
-	_G[name] = nil
-	package.loaded[name] = nil
-end
+-- 	_G[name] = nil -- Modified by dcsdog
+-- 	package.loaded[name] = nil -- Modified by dcsdog
+-- end -- Modified by dcsdog
 
 -- do -- Modified by dcsdog
 -- 	sanitizeModule('os') -- Modified by dcsdog
@@ -108,7 +108,7 @@ end
 -- 	_G['require'] = nil -- Modified by dcsdog
 -- 	_G['loadlib'] = nil -- Modified by dcsdog
 -- 	_G['package'] = nil -- Modified by dcsdog
-end`,
+-- end -- Modified by dcsdog`,
 			wantErr: false,
 		},
 		{
@@ -137,7 +137,7 @@ end`,
 			}
 
 			// Run test
-			err := updateMissionScripting(tempDir)
+			_, err := updateMissionScripting(tempDir)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("updateMissionScripting() error = %v, wantErr %v", err, tt.wantErr)
 				return
