@@ -1,4 +1,4 @@
-name: DcsDog CI
+name: CI
 
 on:
   push:
@@ -10,34 +10,35 @@ jobs:
   build:
     runs-on: windows-latest
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
 
     - name: Set up Go
       uses: actions/setup-go@v4
       with:
-        go-version: '1.24'
+        go-version: '1.21'
 
-    - name: Install dependencies
+    - name: Install Task
+      uses: arduino/setup-task@v1
+      with:
+        version: '3.x'
+        repo-token: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Setup Go module
       run: |
         cd dcsdog
         go mod download
 
-    - name: Run golangci-lint
-      uses: golangci/golangci-lint-action@v3
-      with:
-        version: latest
-
-    - name: Run go vet
+    - name: Run tests
       run: |
         cd dcsdog
-        go vet ./...
+        task test
 
     - name: Build
       run: |
         cd dcsdog
-        go build -v ./...
+        task build
 
-    - name: Test
+    - name: Run linter
       run: |
         cd dcsdog
-        go test -v ./... 
+        task lint 
