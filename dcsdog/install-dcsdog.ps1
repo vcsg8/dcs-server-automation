@@ -18,10 +18,21 @@ if (-not (Test-Path $InstallDir)) {
 # Copy the binary
 Copy-Item $BinarySource -Destination "$InstallDir\\dcsdog.exe" -Force
 
-# Register the service if it doesn't exist
-if (-not (Get-Service -Name $ServiceName -ErrorAction SilentlyContinue)) {
-    New-Service -Name $ServiceName -BinaryPathName "`"$InstallDir\\dcsdog.exe`"" -DisplayName "DCS Dog" -StartupType Automatic
+# Get the directory of the script
+$ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
+
+# Service details
+$DisplayName = "DCS Dog"
+$ExePath = Join-Path $ScriptDir "dcsdog.exe"
+
+# Stop and remove existing service if it exists
+if (Get-Service -Name $ServiceName -ErrorAction SilentlyContinue) {
+    Stop-Service -Name $ServiceName
+    Remove-Service -Name $ServiceName
 }
+
+# Create the new service
+New-Service -Name $ServiceName -BinaryPathName $ExePath -DisplayName $DisplayName -StartupType Automatic
 
 # Start the service
 Start-Service -Name $ServiceName
