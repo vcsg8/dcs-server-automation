@@ -349,7 +349,9 @@ func main() {
 		if err != nil {
 			return
 		}
-		defer elog.Close()
+		defer func() {
+			_ = elog.Close()
+		}()
 
 		err = svc.Run(serviceName, &dcsdogService{})
 		if err != nil {
