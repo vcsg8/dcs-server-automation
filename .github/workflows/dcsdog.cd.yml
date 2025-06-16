@@ -9,22 +9,14 @@ jobs:
   release:
     runs-on: windows-latest
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
 
     - name: Set up Go
-      uses: actions/setup-go@v4
+      uses: actions/setup-go@v5
       with:
-        go-version: '1.21'
-
-    - name: Cache Go modules
-      uses: actions/cache@v3
-      with:
-        path: |
-          ~/go/pkg/mod
-          dcsdog/go.sum
-        key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
-        restore-keys: |
-          ${{ runner.os }}-go-
+        go-version: '1.24'
+        cache: true
+        cache-dependency-path: dcsdog/go.sum
 
     - name: Install dependencies
       run: |
@@ -53,6 +45,6 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./dcsdog.exe
+        asset_path: ./dcsdog/dcsdog.exe
         asset_name: dcsdog.exe
         asset_content_type: application/octet-stream 
