@@ -50,7 +50,12 @@ func findDCSInUninstallKey(rootKey registry.Key, baseKey string) (string, error)
 	if err != nil {
 		return "", err
 	}
-	defer k.Close()
+	defer func() {
+		if err := k.Close(); err != nil {
+			// Log or handle error, for now we can just print it
+			fmt.Printf("warning: failed to close registry key: %v", err)
+		}
+	}()
 
 	// Get all subkeys
 	subKeys, err := k.ReadSubKeyNames(0)
@@ -70,7 +75,10 @@ func findDCSInUninstallKey(rootKey registry.Key, baseKey string) (string, error)
 
 			// Get the installation path
 			installLocation, _, err := appKey.GetStringValue("InstallLocation")
-			appKey.Close()
+			if err := appKey.Close(); err != nil {
+				// Log or handle error, for now we can just print it
+				fmt.Printf("warning: failed to close registry key: %v", err)
+			}
 			if err == nil && installLocation != "" {
 				// Verify the path exists and contains DCS_server.exe
 				if _, err := os.Stat(filepath.Join(installLocation, dcsServerExe)); err == nil {
