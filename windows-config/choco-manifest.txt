@@ -1,0 +1,5 @@
+vscode
+googlechrome
+microsoft-windows-terminal
+docker-desktop
+git
